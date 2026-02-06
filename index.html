@@ -655,9 +655,38 @@
         const FORM_URL = 'https://forms.gle/L687LFsL1aLG2Pt47';
         const processedButtons = new WeakSet(); // Track processed buttons to avoid duplicates
         
-        // Function to find and redirect ALL waitlist buttons (for all devices)
+        // Helper function to check if element is in footer (bottom portion of page)
+        function isInFooter(element) {
+          const rect = element.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          const documentHeight = document.documentElement.scrollHeight;
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const elementTop = rect.top + scrollTop;
+          
+          // Check if element is in the bottom 30% of the page (footer area)
+          // Also check if it's currently visible in the bottom portion of viewport
+          const bottomThreshold = documentHeight * 0.7; // Bottom 30% of page
+          const viewportBottomThreshold = windowHeight * 0.7; // Bottom 30% of viewport
+          
+          return elementTop > bottomThreshold || rect.top > viewportBottomThreshold;
+        }
+        
+        // Helper function to check if element is in header (top portion of page)
+        function isInHeader(element) {
+          const rect = element.getBoundingClientRect();
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          const elementTop = rect.top + scrollTop;
+          
+          // Check if element is in the top 20% of the page (header area)
+          const documentHeight = document.documentElement.scrollHeight;
+          const topThreshold = documentHeight * 0.2;
+          
+          return elementTop < topThreshold && rect.top < window.innerHeight * 0.3;
+        }
+        
+        // Function to find and redirect ONLY footer waitlist buttons
         function redirectWaitlistButtons() {
-          // Search by text content - find ALL matching buttons (not just first)
+          // Search by text content - find ALL matching buttons
           const allButtons = document.querySelectorAll('button, a, [role="button"], div[onclick], div[data-framer-name*="button" i]');
           const waitlistButtons = [];
           
@@ -676,11 +705,15 @@
                 ariaLabel.includes('waitlist') ||
                 ariaLabel.includes('join waitlist') ||
                 dataName.includes('waitlist')) {
-              waitlistButtons.push(btn);
+              
+              // Only process if button is in footer, NOT in header
+              if (isInFooter(btn) && !isInHeader(btn)) {
+                waitlistButtons.push(btn);
+              }
             }
           }
           
-          // Process all found buttons
+          // Process all found footer buttons
           waitlistButtons.forEach(function(waitlistButton) {
             if (processedButtons.has(waitlistButton)) return;
             processedButtons.add(waitlistButton);
