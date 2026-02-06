@@ -652,53 +652,93 @@
     <script>
       // Wait for the page to fully load
       document.addEventListener('DOMContentLoaded', function() {
-        // Function to find and redirect the waitlist button
-        function redirectWaitlistButton() {
-          // Search by text content
-          const allButtons = document.querySelectorAll('button, a, [role="button"]');
-          let waitlistButton = null;
+        const FORM_URL = 'https://forms.gle/L687LFsL1aLG2Pt47';
+        const processedButtons = new WeakSet(); // Track processed buttons to avoid duplicates
+        
+        // Function to find and redirect ALL waitlist buttons (for all devices)
+        function redirectWaitlistButtons() {
+          // Search by text content - find ALL matching buttons (not just first)
+          const allButtons = document.querySelectorAll('button, a, [role="button"], div[onclick], div[data-framer-name*="button" i]');
+          const waitlistButtons = [];
           
           for (let btn of allButtons) {
-            const text = btn.textContent || btn.innerText || '';
-            if (text.toLowerCase().includes('join waitlist') || 
-                text.toLowerCase().includes('join the waitlist')) {
-              waitlistButton = btn;
-              break;
+            // Skip if already processed
+            if (processedButtons.has(btn)) continue;
+            
+            const text = (btn.textContent || btn.innerText || '').trim().toLowerCase();
+            const ariaLabel = (btn.getAttribute('aria-label') || '').toLowerCase();
+            const dataName = (btn.getAttribute('data-framer-name') || '').toLowerCase();
+            
+            // Check multiple patterns for waitlist button
+            if (text.includes('join waitlist') || 
+                text.includes('join the waitlist') ||
+                text.includes('waitlist') ||
+                ariaLabel.includes('waitlist') ||
+                ariaLabel.includes('join waitlist') ||
+                dataName.includes('waitlist')) {
+              waitlistButtons.push(btn);
             }
           }
           
-          if (waitlistButton) {
-            // Remove any existing click handlers and add redirect
-            waitlistButton.addEventListener('click', function(e) {
+          // Process all found buttons
+          waitlistButtons.forEach(function(waitlistButton) {
+            if (processedButtons.has(waitlistButton)) return;
+            processedButtons.add(waitlistButton);
+            
+            // Create a new click handler that opens in new tab
+            const clickHandler = function(e) {
               e.preventDefault();
               e.stopPropagation();
-              window.open('https://forms.gle/L687LFsL1aLG2Pt47', '_blank');
-            }, true); // Use capture phase to intercept early
+              e.stopImmediatePropagation();
+              window.open(FORM_URL, '_blank');
+              return false;
+            };
+            
+            // Remove existing listeners by cloning (if needed) and add new handler
+            waitlistButton.addEventListener('click', clickHandler, true); // Capture phase
             
             // Also set href and target if it's a link
             if (waitlistButton.tagName === 'A') {
-              waitlistButton.href = 'https://forms.gle/L687LFsL1aLG2Pt47';
+              waitlistButton.href = FORM_URL;
               waitlistButton.target = '_blank';
+              waitlistButton.rel = 'noopener noreferrer';
             }
-          }
+            
+            // Handle divs with onclick or other interactive elements
+            if (waitlistButton.tagName === 'DIV' || waitlistButton.tagName === 'SPAN') {
+              waitlistButton.style.cursor = 'pointer';
+              // Remove any existing onclick
+              waitlistButton.onclick = null;
+            }
+          });
         }
         
         // Run immediately
-        redirectWaitlistButton();
+        redirectWaitlistButtons();
         
         // Also run after delays in case Framer loads content asynchronously
-        setTimeout(redirectWaitlistButton, 500);
-        setTimeout(redirectWaitlistButton, 1000);
-        setTimeout(redirectWaitlistButton, 2000);
+        setTimeout(redirectWaitlistButtons, 500);
+        setTimeout(redirectWaitlistButtons, 1000);
+        setTimeout(redirectWaitlistButtons, 2000);
+        setTimeout(redirectWaitlistButtons, 3000);
         
-        // Use MutationObserver to watch for dynamically added elements
+        // Use MutationObserver to watch for dynamically added elements (handles responsive changes)
         const observer = new MutationObserver(function(mutations) {
-          redirectWaitlistButton();
+          redirectWaitlistButtons();
         });
         
         observer.observe(document.body, {
           childList: true,
-          subtree: true
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['class', 'style'] // Watch for class changes that show/hide elements
+        });
+        
+        // Also listen for resize events (when breakpoints change)
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+          clearTimeout(resizeTimeout);
+          resizeTimeout = setTimeout(redirectWaitlistButtons, 300);
         });
       });
     </script>
