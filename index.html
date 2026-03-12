@@ -746,15 +746,55 @@
     <!-- Notion Help & Support Documentation -->
     <div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 20px;">
       <iframe 
-        src="https://nance-help-support-doc.notion.site/ebd/321076d0ee9380c282ebc7c97e4303a2" 
+        id="notion-iframe"
+        src="https://nance-help-support-doc.notion.site/NANCE-LEGAL-321076d0ee9380c282ebc7c97e4303a2" 
         width="100%" 
         height="600" 
         frameborder="0" 
         allowfullscreen
+        allow="fullscreen"
         style="border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"
-        loading="lazy">
+        loading="lazy"
+        onerror="this.style.display='none'; document.getElementById('notion-fallback').style.display='block';">
       </iframe>
+      <div id="notion-fallback" style="display: none; padding: 40px; text-align: center; background: #f5f5f5; border-radius: 8px;">
+        <p style="margin-bottom: 20px; color: #666;">Unable to load Notion page. Please ensure the page is set to <strong>Public</strong>.</p>
+        <a href="https://nance-help-support-doc.notion.site/NANCE-LEGAL-321076d0ee9380c282ebc7c97e4303a2" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           style="display: inline-block; padding: 12px 24px; background: #000; color: #fff; text-decoration: none; border-radius: 6px;">
+          Open in New Tab
+        </a>
+      </div>
     </div>
+    <script>
+      // Check if iframe loads successfully
+      document.addEventListener('DOMContentLoaded', function() {
+        const iframe = document.getElementById('notion-iframe');
+        const fallback = document.getElementById('notion-fallback');
+        
+        iframe.addEventListener('load', function() {
+          // Iframe loaded successfully
+          console.log('Notion iframe loaded');
+        });
+        
+        // Timeout check - if iframe doesn't load within 10 seconds, show fallback
+        setTimeout(function() {
+          try {
+            // Try to access iframe content (will fail if cross-origin)
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            if (!iframeDoc || iframeDoc.body.innerHTML.trim() === '') {
+              iframe.style.display = 'none';
+              fallback.style.display = 'block';
+            }
+          } catch (e) {
+            // Cross-origin error is expected - iframe is loading from different domain
+            // This is normal and means the iframe is working
+            console.log('Iframe is loading (cross-origin check expected)');
+          }
+        }, 10000);
+      });
+    </script>
     
     <script>
         // Make the Explore element clickable to redirect to YouTube video

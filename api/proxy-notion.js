@@ -3,7 +3,7 @@ export const config = {
 };
 
 export default async function handler(req) {
-  const notionUrl = 'https://nance-help-support-doc.notion.site/ebd/321076d0ee9380c282ebc7c97e4303a2';
+  const notionUrl = 'https://nance-help-support-doc.notion.site/NANCE-LEGAL-321076d0ee9380c282ebc7c97e4303a2';
   const notionBaseUrl = 'https://nance-help-support-doc.notion.site';
   
   try {
