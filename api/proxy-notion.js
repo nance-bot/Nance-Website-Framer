@@ -4,6 +4,7 @@ export const config = {
 
 export default async function handler(req) {
   const notionUrl = 'https://nance-help-support-doc.notion.site/ebd/321076d0ee9380c282ebc7c97e4303a2';
+  const notionBaseUrl = 'https://nance-help-support-doc.notion.site';
   
   try {
     const url = new URL(req.url);
@@ -24,18 +25,23 @@ export default async function handler(req) {
 
     let html = await response.text();
     
-    // Get the protocol and host from the request
-    const protocol = url.protocol || 'https:';
-    const host = url.host || req.headers.get('host') || '';
-    const baseUrl = `${protocol}//${host}`;
+    // Add or update base tag to ensure all relative URLs resolve to Notion domain
+    const baseTag = `<base href="${notionUrl}">`;
     
-    // Replace Notion URLs with your domain for better embedding
-    html = html.replace(
-      /https:\/\/nance-help-support-doc\.notion\.site/g,
-      `${baseUrl}/help`
-    );
+    // Check if base tag already exists
+    if (html.includes('<base')) {
+      // Replace existing base tag
+      html = html.replace(/<base[^>]*>/i, baseTag);
+    } else {
+      // Insert base tag right after <head> tag
+      html = html.replace(/<head[^>]*>/i, `$&${baseTag}`);
+    }
+    
+    // Also ensure all protocol-relative URLs (//) become https://
+    html = html.replace(/src=["']\/\//gi, 'src="https://');
+    html = html.replace(/href=["']\/\//gi, 'href="https://');
 
-    // Set appropriate headers
+    // Set appropriate headers - allow resources to load
     return new Response(html, {
       status: 200,
       headers: {
