@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    {
+      "source": "/help",
+      "destination": "/api/proxy-notion"
+    }
+  ]
+}
+
