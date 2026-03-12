@@ -3,6 +3,10 @@
     {
       "source": "/help",
       "destination": "/api/proxy-notion"
+    },
+    {
+      "source": "/help/:path*",
+      "destination": "/api/proxy-notion"
     }
   ]
 }
