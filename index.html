@@ -743,29 +743,33 @@
       });
     </script>
     <script>
-        // Make the Explore element clickable to redirect to YouTube video
+        // Make the Explore element clickable to redirect to YouTube video (works across all devices)
         document.addEventListener('DOMContentLoaded', function() {
             const YOUTUBE_URL = 'https://youtu.be/BK0jlPWA8-Q?si=GeTv0AUR7IbF9Hnp';
             const processedExploreButtons = new WeakSet();
             
             function redirectExploreButtons() {
-                // Try multiple selectors
+                // Try multiple selectors - find ALL matching elements (not just first)
                 const selectors = [
                     '.framer-akiwgf',
                     '[data-framer-name*="explore" i]',
                     '[aria-label*="explore" i]'
                 ];
                 
-                let exploreElement = null;
+                const exploreElements = [];
                 
-                // Try class selector first
+                // Try class selectors - get ALL matches
                 for (let selector of selectors) {
-                    exploreElement = document.querySelector(selector);
-                    if (exploreElement) break;
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach(el => {
+                        if (!processedExploreButtons.has(el)) {
+                            exploreElements.push(el);
+                        }
+                    });
                 }
                 
-                // If not found by selector, search by text content
-                if (!exploreElement) {
+                // If not found by selector, search by text content - find ALL matching elements
+                if (exploreElements.length === 0) {
                     const allElements = document.querySelectorAll('button, a, [role="button"], div, span');
                     for (let el of allElements) {
                         if (processedExploreButtons.has(el)) continue;
@@ -777,33 +781,43 @@
                         if (text.includes('explore') || 
                             ariaLabel.includes('explore') ||
                             dataName.includes('explore')) {
-                            exploreElement = el;
-                            break;
+                            exploreElements.push(el);
                         }
                     }
                 }
                 
-                if (exploreElement && !processedExploreButtons.has(exploreElement)) {
-                    processedExploreButtons.add(exploreElement);
-                    exploreElement.style.cursor = 'pointer';
-                    
-                    const clickHandler = function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.stopImmediatePropagation();
-                        window.open(YOUTUBE_URL, '_blank');
-                        return false;
-                    };
-                    
-                    exploreElement.addEventListener('click', clickHandler, true);
-                    
-                    // Also set href if it's a link
-                    if (exploreElement.tagName === 'A') {
-                        exploreElement.href = YOUTUBE_URL;
-                        exploreElement.target = '_blank';
-                        exploreElement.rel = 'noopener noreferrer';
+                // Process ALL found Explore buttons (for all devices/breakpoints)
+                exploreElements.forEach(function(exploreElement) {
+                    if (!processedExploreButtons.has(exploreElement)) {
+                        processedExploreButtons.add(exploreElement);
+                        exploreElement.style.cursor = 'pointer';
+                        
+                        // Unified click handler that works for both mouse and touch
+                        const clickHandler = function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            window.open(YOUTUBE_URL, '_blank');
+                            return false;
+                        };
+                        
+                        // Add both click and touchstart events for mobile compatibility
+                        exploreElement.addEventListener('click', clickHandler, true);
+                        exploreElement.addEventListener('touchstart', function(e) {
+                            // Only handle if it's a tap (not a scroll)
+                            if (e.touches.length === 1) {
+                                clickHandler(e);
+                            }
+                        }, { passive: false });
+                        
+                        // Also set href if it's a link
+                        if (exploreElement.tagName === 'A') {
+                            exploreElement.href = YOUTUBE_URL;
+                            exploreElement.target = '_blank';
+                            exploreElement.rel = 'noopener noreferrer';
+                        }
                     }
-                }
+                });
             }
             
             // Run immediately
@@ -814,6 +828,7 @@
             setTimeout(redirectExploreButtons, 1000);
             setTimeout(redirectExploreButtons, 2000);
             setTimeout(redirectExploreButtons, 3000);
+            setTimeout(redirectExploreButtons, 5000);
             
             // Use MutationObserver to watch for dynamically added elements
             const observer = new MutationObserver(function(mutations) {
@@ -824,7 +839,7 @@
                 childList: true,
                 subtree: true,
                 attributes: true,
-                attributeFilter: ['class', 'style']
+                attributeFilter: ['class', 'style', 'data-framer-name']
             });
             
             // Also listen for resize events (when breakpoints change)
@@ -832,6 +847,11 @@
             window.addEventListener('resize', function() {
                 clearTimeout(resizeTimeout);
                 resizeTimeout = setTimeout(redirectExploreButtons, 300);
+            });
+            
+            // Listen for orientation change on mobile devices
+            window.addEventListener('orientationchange', function() {
+                setTimeout(redirectExploreButtons, 500);
             });
         });
     </script>
