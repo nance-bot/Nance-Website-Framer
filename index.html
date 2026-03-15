@@ -743,7 +743,7 @@
       });
     </script>
     <script>
-        // Make the Explore element clickable to redirect to YouTube video (works across all devices)
+        // Make the Explore element clickable to redirect to YouTube video (all screens: desktop ≥1440px, tablet 810–1440px, mobile ≤810px)
         document.addEventListener('DOMContentLoaded', function() {
             const YOUTUBE_URL = 'https://youtu.be/BK0jlPWA8-Q?si=GeTv0AUR7IbF9Hnp';
             const processedExploreButtons = new WeakSet();
@@ -768,10 +768,11 @@
                     });
                 }
                 
-                // If not found by selector, search by text content - find ALL matching elements
+                // If not found by selector, search by text content - ONLY interactive elements
+                // (Never use 'div, span' here or a parent container containing "Explore" becomes clickable and captures all clicks)
                 if (exploreElements.length === 0) {
-                    const allElements = document.querySelectorAll('button, a, [role="button"], div, span');
-                    for (let el of allElements) {
+                    const interactiveOnly = document.querySelectorAll('button, a, [role="button"]');
+                    for (let el of interactiveOnly) {
                         if (processedExploreButtons.has(el)) continue;
                         
                         const text = (el.textContent || el.innerText || '').trim().toLowerCase();
@@ -853,6 +854,15 @@
             window.addEventListener('orientationchange', function() {
                 setTimeout(redirectExploreButtons, 500);
             });
+            
+            // Re-scan when breakpoint changes (Framer: 1440px, 810px) so Explore works on every screen size
+            var mqDesktop = window.matchMedia('(min-width: 1440px)');
+            var mqTablet = window.matchMedia('(min-width: 810px) and (max-width: 1439.98px)');
+            var mqMobile = window.matchMedia('(max-width: 809.98px)');
+            function onBreakpointChange() { redirectExploreButtons(); }
+            mqDesktop.addEventListener('change', onBreakpointChange);
+            mqTablet.addEventListener('change', onBreakpointChange);
+            mqMobile.addEventListener('change', onBreakpointChange);
         });
     </script>
     
