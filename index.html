@@ -865,6 +865,48 @@
             mqMobile.addEventListener('change', onBreakpointChange);
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const PRIVACY_URL = 'https://help.nanceapp.com/en/collections/1773689901-privacy-policy';
+            const TERMS_URL = 'https://help.nanceapp.com/en/collections/1773714670-terms-of-use';
+
+            if (document.getElementById('nance-legal-footer')) return;
+
+            const style = document.createElement('style');
+            style.textContent = [
+                '#nance-legal-footer {',
+                '  width: 100%;',
+                '  padding: 24px 16px;',
+                '  background: #141414;',
+                '  text-align: center;',
+                '  font-family: "Instrument Sans", sans-serif;',
+                '  font-size: 14px;',
+                '  line-height: 1.5;',
+                '}',
+                '#nance-legal-footer a {',
+                '  color: rgba(255, 255, 255, 0.85);',
+                '  text-decoration: none;',
+                '}',
+                '#nance-legal-footer a:hover {',
+                '  color: #E7FF65;',
+                '}',
+                '#nance-legal-footer .nance-legal-sep {',
+                '  color: rgba(255, 255, 255, 0.35);',
+                '  margin: 0 12px;',
+                '}'
+            ].join('\n');
+            document.head.appendChild(style);
+
+            const footer = document.createElement('footer');
+            footer.id = 'nance-legal-footer';
+            footer.innerHTML =
+                '<a href="' + PRIVACY_URL + '" target="_blank" rel="noopener noreferrer">Privacy Policy</a>' +
+                '<span class="nance-legal-sep">·</span>' +
+                '<a href="' + TERMS_URL + '" target="_blank" rel="noopener noreferrer">Terms of Use</a>';
+
+            document.body.appendChild(footer);
+        });
+    </script>
     
 </body>
 </html>
