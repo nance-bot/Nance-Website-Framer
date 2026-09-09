@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Linear / Business, Statistic / Presentation Graph" clip-path="url(#clip0_0_34)">
+<path id="Vector" d="M1.66667 1.66667H18.3333" stroke="#333C00" stroke-width="1.5" stroke-linecap="round"/>
+<path id="Vector_2" d="M7.5 8.75L8.57741 7.67259C8.85519 7.39481 8.99408 7.25592 9.16667 7.25592C9.33926 7.25592 9.47814 7.39481 9.75592 7.67259L10.2441 8.16074C10.5219 8.43852 10.6607 8.57741 10.8333 8.57741C11.0059 8.57741 11.1448 8.43852 11.4226 8.16074L12.5 7.08333" stroke="#333C00" stroke-width="1.5" stroke-linecap="round"/>
+<path id="Vector_3" d="M10 17.5L10 14.1667" stroke="#333C00" stroke-width="1.5" stroke-linecap="round"/>
+<path id="Vector_4" d="M8.33333 18.3333L10 17.5" stroke="#333C00" stroke-width="1.5" stroke-linecap="round"/>
+<path id="Vector_5" d="M11.6667 18.3333L10 17.5" stroke="#333C00" stroke-width="1.5" stroke-linecap="round"/>
+<path id="Vector_6" d="M16.6667 1.66667V8.75C16.6667 11.3034 16.6667 12.5802 15.8298 13.3734C14.993 14.1667 13.6461 14.1667 10.9524 14.1667H9.04762C6.35388 14.1667 5.00701 14.1667 4.17017 13.3734C3.33333 12.5802 3.33333 11.3034 3.33333 8.75V1.66667" stroke="#333C00" stroke-width="1.5"/>
+</g>
+<defs>
+<clipPath id="clip0_0_34">
+<rect width="20" height="20" fill="white"/>
+</clipPath>
+</defs>
+</svg>
